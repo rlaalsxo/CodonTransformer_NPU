@@ -38,7 +38,12 @@ def main():
 
     deterministic = not args.no_deterministic
 
-    device = torch.device(args.device)
+    if args.device == "rngd":
+        from CodonTransformer.CodonPrediction import _find_rngd_device
+        device = _find_rngd_device()
+        print(f"Using NPU device: {device}")
+    else:
+        device = torch.device(args.device)
 
     results = predict_dna_sequence(
         protein=args.protein,

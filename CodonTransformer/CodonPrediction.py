@@ -35,6 +35,19 @@ def _is_rngd_device(device: torch.device) -> bool:
     return str(device).startswith("rngd")
 
 
+def _find_rngd_device() -> torch.device:
+    from furiosa.native_torch import get_available_devices
+    devices = get_available_devices()
+    for d in devices:
+        try:
+            t = torch.tensor([1.0], device=d)
+            del t
+            return torch.device(d)
+        except Exception:
+            continue
+    raise RuntimeError("No available RNGD device found")
+
+
 def _compile_for_rngd(model: torch.nn.Module) -> torch.nn.Module:
     from furiosa.torch import backend
     from furiosa.native_torch import compiler, set_fusion
