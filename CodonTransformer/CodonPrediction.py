@@ -37,7 +37,12 @@ def _is_rngd_device(device: torch.device) -> bool:
 
 def _compile_for_rngd(model: torch.nn.Module) -> torch.nn.Module:
     from furiosa.torch import backend
-    from furiosa.native_torch import compiler
+    from furiosa.native_torch import compiler, set_fusion
+
+    try:
+        set_fusion(1)
+    except RuntimeError:
+        pass
 
     compiler_config = compiler.Config(
         implicit_type_casting=True,
